@@ -3,6 +3,7 @@
 # Files and directories created by pub
 .dart_tool/
 .packages
+.pub/
 build/
 # If you're building an application, you may want to check-in your pubspec.lock
 pubspec.lock
@@ -19,3 +20,5 @@ doc/api/
 *.js_
 *.js.deps
 *.js.map
+# mac os
+.DS_Store
