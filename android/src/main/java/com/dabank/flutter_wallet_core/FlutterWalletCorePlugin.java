@@ -50,18 +50,6 @@ public class FlutterWalletCorePlugin implements FlutterPlugin, MethodCallHandler
       String path = call.arguments("path");
       String password = call.arguments("password");
       String symbolString = call.arguments("symbols");
-      if (!this.isValidString(mnemonic)) {
-        return result.error("PARAMETER_ERROR", "Mnemonic is invalid");
-      }
-      if (!this.isValidString(path)) {
-        return result.error("PARAMETER_ERROR", "Path is invalid");
-      }
-      if (!this.isValidString(password)) {
-        return result.error("PARAMETER_ERROR", "Password is invalid");
-      }
-      if (!this.isValidString(symbolString)) {
-        symbolString = "BTC";
-      }
       try {
         Wallet.validateMnemonic(mnemonic)
       } catch (Exception e) {
@@ -69,7 +57,7 @@ public class FlutterWalletCorePlugin implements FlutterPlugin, MethodCallHandler
       }
       Wallet_ wallet;
       try {
-        wallet = this.importMnemonic(mnemonic, path, password);
+        wallet = this.getWalletInstance(mnemonic, path, password);
       } catch (Exception e) {
         return result.error("PROCESS_ERROR", "Unknown error when importing mnemonic");
       }
@@ -89,21 +77,6 @@ public class FlutterWalletCorePlugin implements FlutterPlugin, MethodCallHandler
       String path = call.arguments("path");
       String password = call.arguments("password");
       String symbol = call.arguments("symbol");
-      if (!this.isValidString(mnemonic)) {
-        return result.error("PARAMETER_ERROR", "Mnemonic is invalid");
-      }
-      if (!this.isValidString(rawTx)) {
-        return result.error("PARAMETER_ERROR", "RawTx is invalid");
-      }
-      if (!this.isValidString(path)) {
-        return result.error("PARAMETER_ERROR", "Path is invalid");
-      }
-      if (!this.isValidString(password)) {
-        return result.error("PARAMETER_ERROR", "Password is invalid");
-      }
-      if (!this.isValidString(symbol)) {
-        return result.error("PARAMETER_ERROR", "Symbol is invalid");
-      }
       try {
         Wallet.validateMnemonic(mnemonic)
       } catch (Exception e) {
@@ -115,15 +88,10 @@ public class FlutterWalletCorePlugin implements FlutterPlugin, MethodCallHandler
       } catch (Exception e) {
         return result.error("PROCESS_ERROR", "Unknown error when signing");
       }
-
       result.success(signTx);
     } else {
       result.notImplemented();
     }
-  }
-
-  private isValidString(String str) {
-    return str == null || str.equals("");
   }
 
   private String generateMnemonic() {
@@ -133,20 +101,15 @@ public class FlutterWalletCorePlugin implements FlutterPlugin, MethodCallHandler
   /**
   * @params password: salt
   */
-  private Wallet_ importMnemonic(String mnemonic, String path, String password) {
+  private Wallet_ getWalletInstance(String mnemonic, String path, String password) {
     WalletOptions options = new WalletOptions();
     options.add(Wallet.withPathFormat(path)).add(Wallet.withPassword(password));
     Wallet_ build = Wallet.buildWalletFromMnemonic(mnemonic, false, options);
     return wallet;
   }
 
-  // TODO I'm not sure if we can use this method to get wallet instance, because it didn't support the path param
-  // private Wallet getWalletFromMnemonic(String mnemonic) {
-  //   Wallet.NewHDWalletFromMnemonic()
-  // }
-
   private String signTx(String mnemonic, String path, String password, String symbol, String rawTx) {
-    Wallet_ wallet = this.importMnemonic(mnemonic, path, password);
+    Wallet_ wallet = this.getWalletInstance(mnemonic, path, password);
     return wallet.sign(symbol, rawTx);
   }
 
