@@ -2,6 +2,8 @@ package com.dabank.flutter_wallet_core;
 
 import androidx.annotation.NonNull;
 
+import java.util.HashMap;
+
 import io.flutter.embedding.engine.plugins.FlutterPlugin;
 import io.flutter.plugin.common.MethodCall;
 import io.flutter.plugin.common.MethodChannel;
@@ -9,10 +11,13 @@ import io.flutter.plugin.common.MethodChannel.MethodCallHandler;
 import io.flutter.plugin.common.MethodChannel.Result;
 import io.flutter.plugin.common.PluginRegistry.Registrar;
 
-import Wallet.WalletBuilder;
-import Wallet.Wallet;
+import wallet.Wallet;
+import wallet.WalletOptions;
+import wallet.Wallet_;
 
-/** FlutterWalletCorePlugin */
+/**
+ * FlutterWalletCorePlugin
+ */
 public class FlutterWalletCorePlugin implements FlutterPlugin, MethodCallHandler {
   /// The MethodChannel that will the communication between Flutter and native Android
   ///
@@ -46,47 +51,55 @@ public class FlutterWalletCorePlugin implements FlutterPlugin, MethodCallHandler
       String mnemonic = this.generateMnemonic();
       result.success(mnemonic);
     } else if (call.method.equals("importMnemonic")) {
-      String mnemonic = call.arguments("mnemonic");
-      String path = call.arguments("path");
-      String password = call.arguments("password");
-      String symbolString = call.arguments("symbols");
+      String mnemonic = call.argument("mnemonic");
+      String path = call.argument("path");
+      String password = call.argument("password");
+      String symbolString = call.argument("symbols");
       try {
         Wallet.validateMnemonic(mnemonic);
       } catch (Exception e) {
-        return result.error("PARAMETER_ERROR", "Mnemonic is invalid");
+        result.error("PARAMETER_ERROR", "Mnemonic is invalid", null);
+        return;
       }
       Wallet_ wallet;
       try {
         wallet = this.getWalletInstance(mnemonic, path, password);
       } catch (Exception e) {
-        return result.error("PROCESS_ERROR", "Unknown error when importing mnemonic");
+        result.error("PROCESS_ERROR", "Unknown error when importing mnemonic", null);
+        return;
       }
-      Array<String> symbols = symbolString.split(",", 0);
+      String[] symbols = symbolString.split(",", 0);
       HashMap<String, HashMap<String, String>> keyInfo = new HashMap<String, HashMap<String, String>>();
       for (String symbol : symbols) {
         HashMap<String, String> keys = new HashMap<String, String>();
-        keys.put("publicKey", wallet.derivePublicKey(symbol));
-        keys.put("address", wallet.deriveAddress(symbol));
-
+        try {
+          keys.put("publicKey", wallet.derivePublicKey(symbol));
+          keys.put("address", wallet.deriveAddress(symbol));
+        } catch (Exception e) {
+          e.printStackTrace();
+        }
         keyInfo.put(symbol, keys);
       }
       result.success(keyInfo);
     } else if (call.method.equals("signTx")) {
-      String mnemonic = call.arguments("mnemonic");
-      String rawTx = call.arguments("rawTx"); 
-      String path = call.arguments("path");
-      String password = call.arguments("password");
-      String symbol = call.arguments("symbol");
+      String mnemonic = call.argument("mnemonic");
+      String rawTx = call.argument("rawTx");
+      String path = call.argument("path");
+      String password = call.argument("password");
+      String symbol = call.argument("symbol");
       try {
         Wallet.validateMnemonic(mnemonic);
       } catch (Exception e) {
-        return result.error("PARAMETER_ERROR", "Mnemonic is invalid");
+        result.error("PARAMETER_ERROR", "Mnemonic is invalid", null);
+        return;
       }
       Wallet_ wallet;
+      String signTx = "";
       try {
-        String signTx = this.signTx(mnemonic, path, password, symbol, rawTx);
+        signTx = this.signTx(mnemonic, path, password, symbol, rawTx);
       } catch (Exception e) {
-        return result.error("PROCESS_ERROR", "Unknown error when signing");
+        result.error("PROCESS_ERROR", "Unknown error when signing", null);
+        return;
       }
       result.success(signTx);
     } else {
@@ -95,22 +108,38 @@ public class FlutterWalletCorePlugin implements FlutterPlugin, MethodCallHandler
   }
 
   private String generateMnemonic() {
-    return Wallet.newMnemonic();
+    try {
+      return Wallet.newMnemonic();
+    } catch (Exception e) {
+      e.printStackTrace();
+      return "";
+    }
   }
 
   /**
-  * @params password: salt
-  */
+    * @params password: salt
+    */
   private Wallet_ getWalletInstance(String mnemonic, String path, String password) {
     WalletOptions options = new WalletOptions();
-    options.add(Wallet.withPathFormat(path)).add(Wallet.withPassword(password));
-    Wallet_ build = Wallet.buildWalletFromMnemonic(mnemonic, false, options);
+    options.add(Wallet.withPathFormat(path));
+    options.add(Wallet.withPassword(password));
+    Wallet_ wallet = null;
+    try {
+      wallet = Wallet.buildWalletFromMnemonic(mnemonic, false, options);
+    } catch (Exception e) {
+      e.printStackTrace();
+    }
     return wallet;
   }
 
   private String signTx(String mnemonic, String path, String password, String symbol, String rawTx) {
     Wallet_ wallet = this.getWalletInstance(mnemonic, path, password);
-    return wallet.sign(symbol, rawTx);
+    try {
+      return wallet.sign(symbol, rawTx);
+    } catch (Exception e) {
+      e.printStackTrace();
+      return "";
+    }
   }
 
   @Override
