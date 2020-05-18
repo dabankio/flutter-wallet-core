@@ -51,7 +51,7 @@ public class FlutterWalletCorePlugin implements FlutterPlugin, MethodCallHandler
       String password = call.arguments("password");
       String symbolString = call.arguments("symbols");
       try {
-        Wallet.validateMnemonic(mnemonic)
+        Wallet.validateMnemonic(mnemonic);
       } catch (Exception e) {
         return result.error("PARAMETER_ERROR", "Mnemonic is invalid");
       }
@@ -78,7 +78,7 @@ public class FlutterWalletCorePlugin implements FlutterPlugin, MethodCallHandler
       String password = call.arguments("password");
       String symbol = call.arguments("symbol");
       try {
-        Wallet.validateMnemonic(mnemonic)
+        Wallet.validateMnemonic(mnemonic);
       } catch (Exception e) {
         return result.error("PARAMETER_ERROR", "Mnemonic is invalid");
       }
