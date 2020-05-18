@@ -36,6 +36,6 @@ android {
 }
 
 dependencies {
-    compile(name:'wallet', ext:'aar')
-    compile files('libs/wallet-sources.jar')
+    implementation files('libs/wallet-sources.jar')
+    implementation(name: 'wallet', ext: 'aar')
 }
