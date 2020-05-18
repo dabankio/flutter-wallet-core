@@ -20,5 +20,7 @@ doc/api/
 *.js_
 *.js.deps
 *.js.map
-# mac os
+
+# custom
 .DS_Store
+.idea
