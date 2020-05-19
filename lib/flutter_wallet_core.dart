@@ -21,13 +21,17 @@ class WalletCore {
 
   static Future<Map<String, Keys>> importMnemonic(String mnemonic, String path,
       String password, List<String> symbols) async {
-    final Map<String, Map<String, String>> keyInfo = await _channel
-        .invokeMethod<Map<String, Map<String, String>>>('importMnemonic', {
+    print("$mnemonic, $path, $password, $symbols");
+
+    final Map<String, dynamic> keyInfo = Map<String, dynamic>.from(
+        await _channel.invokeMethod('importMnemonic', {
       "mnemonic": mnemonic,
       "path": path,
       "password": password,
       "symbols": symbols.join(",")
-    });
+    }));
+
+    print(keyInfo);
 
     return keyInfo.map((key, value) => MapEntry(
         key, Keys(address: value["address"], publicKey: value["publicKey"])));

@@ -1,5 +1,5 @@
 #import "FlutterWalletCorePlugin.h"
-#import <wallet/Wallet.objc.h>
+#import <bip39/Wallet.objc.h>
 
 @implementation FlutterWalletCorePlugin
 + (void)registerWithRegistrar:(NSObject<FlutterPluginRegistrar>*)registrar {
@@ -24,7 +24,7 @@
     NSString* mnemonic = call.arguments[@"mnemonic"];
     NSString* path = call.arguments[@"path"];
     NSString* password = call.arguments[@"password"];
-    NSString* symbolString = call.arguments[@"symbolString"];
+    NSString* symbolString = call.arguments[@"symbols"];
     NSError* __autoreleasing error;
     WalletWallet* wallet = [FlutterWalletCorePlugin getWalletInstance:mnemonic path:path password:password error:&error];
 
@@ -33,25 +33,29 @@
       return;
     }
 
-    NSArray *symbols = [symbolString componentsSeparatedByString: @","];
-    NSMutableDictionary *keyInfo = [NSMutableDictionary dictionaryWithCapacity:[symbols count]];
+    NSString* publicKey = [wallet derivePublicKey:@"BTC" error:&error];
 
-    for (NSString *symbol in symbols) {
-      NSMutableDictionary *keys = [NSMutableDictionary dictionaryWithCapacity:2];
-      keys[@"publicKey"] = [wallet derivePublicKey:symbol error:&error];
-      if (error) {
-        result(error);
-        return;
-      } 
-      keys[@"address"] = [wallet deriveAddress:symbol error:&error];
-      if (error) {
-        result(error);
-        return;
-      } 
+    result(publicKey);
 
-      keyInfo[symbol] = keys;
-    }
-    result(keyInfo);
+//     NSArray *symbols = [symbolString componentsSeparatedByString: @","];
+//     NSMutableDictionary *keyInfo = [NSMutableDictionary dictionaryWithCapacity:[symbols count]];
+
+//     for (NSString *symbol in symbols) {
+//       NSMutableDictionary *keys = [NSMutableDictionary dictionaryWithCapacity:2];
+//       keys[@"publicKey"] = [wallet derivePublicKey:symbol error:&error];
+//       if (error) {
+//           result([FlutterError errorWithCode:@"derivePublicKeyError" message:error.localizedDescription details:nil]);
+//         return;
+//       } 
+//       keys[@"address"] = [wallet deriveAddress:symbol error:&error];
+//       if (error) {
+// //          result([FlutterError errorWithCode:error.code]);
+//         return;
+//       } 
+
+//       keyInfo[symbol] = keys;
+//     }
+//     result(keyInfo);
   } else if ([@"signTx" isEqualToString:call.method]) {
     NSString* mnemonic = call.arguments[@"mnemonic"];
     NSString* path = call.arguments[@"path"];
@@ -63,7 +67,7 @@
     NSString* signedTx = [FlutterWalletCorePlugin signTx:mnemonic path:path password:password symbol:symbol rawTx:rawTx error:&error];
 
     if (error) {
-      result(error);
+//      result([FlutterError errorWithCode:error.code]);
       return;
     }
     result(signedTx);
@@ -78,9 +82,11 @@
 }
 
 + (WalletWallet*) getWalletInstance:(NSString*)mnemonic path:(NSString*)path password:(NSString*)password error:(NSError * _Nullable __autoreleasing * _Nullable)error {
-    WalletWalletOptions* options;
-    [options add:WalletWithPathFormat(path)];
-    [options add:WalletWithPassword(password)];
+    WalletWalletOptions* options = [WalletWalletOptions new];
+    id<WalletWalletOption> pathOption = WalletWithPathFormat(path);
+    id<WalletWalletOption> passwordOption = WalletWithPathFormat(password);
+    [options add:pathOption];
+    [options add:passwordOption];
 
     WalletWallet* wallet = WalletBuildWalletFromMnemonic(mnemonic, false, options, error);
     return wallet;

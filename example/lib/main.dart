@@ -17,8 +17,8 @@ class _MyAppState extends State<MyApp> {
   Map<String, Keys> keys = {};
 
   final String path = "m/44'/0'/0'/0/0";
-  final String password = "test_core_wallet";
-  final List<String> symbols = ["BTC", "ETH", "BBC", "USDT"];
+  final String password = "test_core_wallet_ios";
+  final List<String> symbols = ["ETH", "USDT(Omni)"];
 
   @override
   void initState() {
@@ -76,14 +76,10 @@ class _MyAppState extends State<MyApp> {
                         child: Column(
                       children: <Widget>[
                         Text(symbol),
-                        Row(children: [
-                          Text("publicKey"),
-                          Text(keys[symbol].publicKey),
-                        ]),
-                        Row(children: [
-                          Text("address"),
-                          Text(keys[symbol].address),
-                        ])
+                        Text("publicKey"),
+                        Text(keys[symbol].publicKey),
+                        Text("address"),
+                        Text(keys[symbol].address),
                       ],
                     ));
                   }).toList())),
