@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'dart:async';
 
 import 'package:flutter_wallet_core/flutter_wallet_core.dart';
 
@@ -18,7 +17,7 @@ class _MyAppState extends State<MyApp> {
 
   final String path = "m/44'/0'/0'/0/0";
   final String password = "test_core_wallet_ios";
-  final List<String> symbols = ["ETH", "USDT(Omni)"];
+  final List<String> symbols = ["BTC", "ETH", "USDT(Omni)"];
 
   @override
   void initState() {
@@ -27,7 +26,6 @@ class _MyAppState extends State<MyApp> {
 
   void generateMnemonic() async {
     final String mnemonic = await WalletCore.generateMnemonic();
-    print(mnemonic);
 
     setState(() {
       this.mnemonic = mnemonic;

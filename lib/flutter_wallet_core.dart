@@ -2,6 +2,14 @@ import 'dart:async';
 
 import 'package:flutter/services.dart';
 
+class WalletCoreSymbol {
+  static final all = [btc, eth, bbc, usdt];
+  static final btc = "BTC";
+  static final eth = "ETH";
+  static final bbc = "BBC";
+  static final usdt = "USDT(Omni)";
+}
+
 class Keys {
   final String publicKey;
   final String address;
