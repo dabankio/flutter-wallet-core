@@ -12,8 +12,7 @@ class MyApp extends StatefulWidget {
 }
 
 class _MyAppState extends State<MyApp> {
-  String mnemonic = "";
-  Map<String, Keys> keys = {};
+  String mnemonic;
 
   final String path = "m/44'/0'/0'/0/0";
   final String password = "test_core_wallet_ios";
@@ -25,71 +24,114 @@ class _MyAppState extends State<MyApp> {
   }
 
   void generateMnemonic() async {
-    final String mnemonic = await WalletCore.generateMnemonic();
-
+    final mnemonic = await WalletCore.generateMnemonic();
     setState(() {
       this.mnemonic = mnemonic;
     });
   }
 
-  void importMnemonic() async {
-    final Map<String, Keys> keys =
+  void importMnemonic(BuildContext context) async {
+    final wallets =
         await WalletCore.importMnemonic(mnemonic, path, password, symbols);
 
-    setState(() {
-      this.keys = keys;
-    });
+    showBottomSheet(
+      context: context,
+      builder: (_) => Container(
+        padding: EdgeInsets.all(15),
+        child: Column(
+          children: wallets.keys
+              .map(
+                (symbol) => Container(
+                  margin: EdgeInsets.all(15),
+                  padding: EdgeInsets.all(10),
+                  color: Colors.grey.shade200,
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(
+                        symbol,
+                        style: Theme.of(context).textTheme.headline5,
+                      ),
+                      Text('\nAddress: ${wallets[symbol].address}'),
+                      Text('\nPublicKey: ${wallets[symbol].publicKey}\n'),
+                    ],
+                  ),
+                ),
+              )
+              .toList(),
+        ),
+      ),
+    );
+  }
+
+  void bbcCreateFromMnemonic(BuildContext context) async {
+    if (mnemonic.isNotEmpty) {
+      final walletInfo = await WalletBbc.createFromMnemonic(password, mnemonic);
+      showBottomSheet(
+        context: context,
+        builder: (_) => Container(
+          padding: EdgeInsets.all(15),
+          child: Column(
+            children: [
+              Text('Address:\n ${walletInfo.address}\n\n'),
+              Text('PublicKey:\n ${walletInfo.publicKey}\n\n'),
+              Text('PrivateKey:\n ${walletInfo.privateKey}\n\n'),
+            ],
+          ),
+        ),
+      );
+    }
   }
 
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-        home: Scaffold(
-      appBar: AppBar(
-        title: const Text('Flutter wallet core example app'),
-      ),
-      body: SingleChildScrollView(
-          child: Padding(
-        padding: EdgeInsets.symmetric(vertical: 10, horizontal: 20),
-        child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: <Widget>[
-              Text("mnemonic:"),
-              Padding(
-                padding: EdgeInsets.symmetric(vertical: 5.0, horizontal: 0),
-                child: Text(mnemonic),
-              ),
-              FlatButton(
+      home: Scaffold(
+        appBar: AppBar(
+          title: Text('Flutter wallet core example app'),
+        ),
+        body: Builder(
+          builder: (context) => SingleChildScrollView(
+              child: Padding(
+            padding: EdgeInsets.symmetric(vertical: 10, horizontal: 20),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: <Widget>[
+                Text("Mnemonic:"),
+                Padding(
+                  padding: EdgeInsets.symmetric(vertical: 5.0, horizontal: 0),
+                  child: Text(
+                      mnemonic ?? 'First you need to create a new mnemonic'),
+                ),
+                FlatButton(
                   color: Colors.blue[500],
                   child: Text(
                     "Generate Mnemonic",
                     style: TextStyle(color: Colors.white),
                   ),
-                  onPressed: generateMnemonic),
-              Padding(
-                  padding: EdgeInsets.symmetric(vertical: 20),
-                  child: Column(
-                      children: keys.keys.toList().map((symbol) {
-                    return Container(
-                        child: Column(
-                      children: <Widget>[
-                        Text(symbol),
-                        Text("publicKey"),
-                        Text(keys[symbol].publicKey),
-                        Text("address"),
-                        Text(keys[symbol].address),
-                      ],
-                    ));
-                  }).toList())),
-              FlatButton(
+                  onPressed: generateMnemonic,
+                ),
+                FlatButton(
                   color: Colors.blue[500],
                   child: Text(
                     "Import Mnemonic",
                     style: TextStyle(color: Colors.white),
                   ),
-                  onPressed: importMnemonic)
-            ]),
-      )),
-    ));
+                  onPressed: () => importMnemonic(context),
+                ),
+                FlatButton(
+                  color: Colors.blue[500],
+                  child: Text(
+                    "Create BBC Wallet from Mnemonic",
+                    style: TextStyle(color: Colors.white),
+                  ),
+                  onPressed: () => bbcCreateFromMnemonic(context),
+                )
+              ],
+            ),
+          )),
+        ),
+      ),
+    );
   }
 }

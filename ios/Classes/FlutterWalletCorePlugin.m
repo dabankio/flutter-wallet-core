@@ -1,20 +1,22 @@
 #import "FlutterWalletCorePlugin.h"
 #import <bip39/Wallet.objc.h>
+#import <WalletBbc.h>
 
 @implementation FlutterWalletCorePlugin
 + (void)registerWithRegistrar:(NSObject<FlutterPluginRegistrar>*)registrar {
   FlutterMethodChannel* channel = [FlutterMethodChannel
-      methodChannelWithName:@"flutter_wallet_core"
-            binaryMessenger:[registrar messenger]];
+                                   methodChannelWithName:@"flutter_wallet_core"
+                                   binaryMessenger:[registrar messenger]];
   FlutterWalletCorePlugin* instance = [[FlutterWalletCorePlugin alloc] init];
   [registrar addMethodCallDelegate:instance channel:channel];
 }
 
 - (void)handleMethodCall:(FlutterMethodCall*)call result:(FlutterResult)result {
-  if ([@"generateMnemonic" isEqualToString:call.method]) {
     NSError* __autoreleasing error;
+    
+    // Mathods mapping
+  if ([@"generateMnemonic" isEqualToString:call.method]) {
     NSString* mnemonic = [FlutterWalletCorePlugin generateMnemonic:&error];
-
     if (error) {
       result([FlutterError errorWithCode:@"generateMnemonicError" message:error.localizedDescription details:nil]);
       return;
@@ -25,7 +27,6 @@
     NSString* path = call.arguments[@"path"];
     NSString* password = call.arguments[@"password"];
     NSString* symbolString = call.arguments[@"symbols"];
-    NSError* __autoreleasing error;
 
     WalletValidateMnemonic(mnemonic, &error);
 
@@ -68,7 +69,6 @@
     NSString* password = call.arguments[@"password"];
     NSString* symbol = call.arguments[@"symbol"];
     NSString* rawTx = call.arguments[@"rawTx"];
-    NSError* __autoreleasing error;
 
     WalletValidateMnemonic(mnemonic, &error);
 
@@ -84,6 +84,39 @@
       return;
     }
     result(signedTx);
+  } else if([@"bbcCreateFromPrivateKey" isEqualToString:call.method]) {
+      NSString* privateKey = call.arguments[@"privateKey"];
+
+      NSMutableDictionary* data = [WalletBbc createFromPrivateKey:privateKey error:&error];
+      if (error) {
+        result([FlutterError errorWithCode:@"bbcCreateFromPrivateKey" message:error.localizedDescription details:nil]);
+        return;
+      }
+      result(data);
+  } else if([@"bbcCreateFromMnemonic" isEqualToString:call.method]) {
+      NSString* salt = call.arguments[@"salt"];
+      NSString* mnemonic = call.arguments[@"mnemonic"];
+
+      NSMutableDictionary* data = [WalletBbc createFromMnemonic:mnemonic salt:salt error:&error];
+      if (error) {
+        result([FlutterError errorWithCode:@"createFromMnemonic" message:error.localizedDescription details:nil]);
+        return;
+      }
+      result(data);
+  } else if([@"bbcSignTxWithTemplate" isEqualToString:call.method]) {
+      NSString* rawTx = call.arguments[@"rawTx"];
+      NSString* templateData = call.arguments[@"templateData"];
+      NSString* privateKey = call.arguments[@"privateKey"];
+
+      NSString* data = [WalletBbc signTransactionWithTemplate:rawTx
+                                                 templateData:templateData
+                                                   privateKey:privateKey
+                                                        error:&error];
+      if (error) {
+        result([FlutterError errorWithCode:@"createFromMnemonic" message:error.localizedDescription details:nil]);
+        return;
+      }
+      result(data);
   } else {
     result(FlutterMethodNotImplemented);
   }
