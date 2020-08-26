@@ -11,6 +11,7 @@
 #include "Universe.objc.h"
 
 #include "Bip44.objc.h"
+#include "Bbc.objc.h"
 #include "Btc.objc.h"
 #include "Eth.objc.h"
 #include "Omni.objc.h"
