@@ -6,6 +6,7 @@ framework module "Bip39" {
     header "Eth.objc.h"
     header "Omni.objc.h"
     header "Wallet.objc.h"
+    header "Bbc.objc.h"
     header "Universe.objc.h"
     header "Bip39.h"
 
