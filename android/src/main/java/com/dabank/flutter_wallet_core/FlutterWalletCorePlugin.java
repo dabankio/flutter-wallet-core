@@ -64,7 +64,7 @@ public class FlutterWalletCorePlugin implements FlutterPlugin, MethodCallHandler
       }
       Wallet_ wallet;
       try {
-        wallet = this.getWalletInstance(mnemonic, path, password);
+        wallet = this.getWalletInstance(mnemonic, path, password, beta);
       } catch (Exception e) {
         result.error("PROCESS_ERROR", "Unknown error when importing mnemonic", null);
         return;
