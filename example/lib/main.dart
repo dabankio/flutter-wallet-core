@@ -13,6 +13,7 @@ class MyApp extends StatefulWidget {
 
 class _MyAppState extends State<MyApp> {
   String mnemonic;
+  String privateKey;
 
   final String path = "m/44'/0'/0'/0/0";
   final String password = "test_core_wallet_ios";
@@ -38,7 +39,7 @@ class _MyAppState extends State<MyApp> {
       context: context,
       builder: (_) => Container(
         padding: EdgeInsets.all(15),
-        child: Column(
+        child: SingleChildScrollView(child: Column(
           children: wallets.keys
               .map(
                 (symbol) => Container(
@@ -59,7 +60,7 @@ class _MyAppState extends State<MyApp> {
                 ),
               )
               .toList(),
-        ),
+        )) ,
       ),
     );
   }
@@ -67,12 +68,33 @@ class _MyAppState extends State<MyApp> {
   void bbcCreateFromMnemonic(BuildContext context) async {
     if (mnemonic.isNotEmpty) {
       final walletInfo = await WalletBbc.createFromMnemonic(password, mnemonic);
+      privateKey = walletInfo.privateKey;
       showBottomSheet(
         context: context,
         builder: (_) => Container(
           padding: EdgeInsets.all(15),
           child: Column(
             children: [
+              Text('Address:\n ${walletInfo.address}\n\n'),
+              Text('PublicKey:\n ${walletInfo.publicKey}\n\n'),
+              Text('PrivateKey:\n ${walletInfo.privateKey}\n\n'),
+            ],
+          ),
+        ),
+      );
+    }
+  }
+
+  void bbcCreateFromPrivateKey(BuildContext context) async {
+    if (privateKey.isNotEmpty) {
+      final walletInfo = await WalletBbc.createFromPrivateKey(privateKey);
+      showBottomSheet(
+        context: context,
+        builder: (_) => Container(
+          padding: EdgeInsets.all(15),
+          child: Column(
+            children: [
+              Text('bbcCreateFromPrivateKey:\n $privateKey\n\n'),
               Text('Address:\n ${walletInfo.address}\n\n'),
               Text('PublicKey:\n ${walletInfo.publicKey}\n\n'),
               Text('PrivateKey:\n ${walletInfo.privateKey}\n\n'),
@@ -103,6 +125,11 @@ class _MyAppState extends State<MyApp> {
                   child: Text(
                       mnemonic ?? 'First you need to create a new mnemonic'),
                 ),
+                 Padding(
+                  padding: EdgeInsets.symmetric(vertical: 5.0, horizontal: 0),
+                  child: Text(
+                      privateKey != null ? 'privateKey:$privateKey': ''),
+                ),
                 FlatButton(
                   color: Colors.blue[500],
                   child: Text(
@@ -126,6 +153,15 @@ class _MyAppState extends State<MyApp> {
                     style: TextStyle(color: Colors.white),
                   ),
                   onPressed: () => bbcCreateFromMnemonic(context),
+                ),
+
+                 FlatButton(
+                  color: Colors.blue[500],
+                  child: Text(
+                    "Create BBC Wallet from privateKey",
+                    style: TextStyle(color: Colors.white),
+                  ),
+                  onPressed: () => bbcCreateFromPrivateKey(context),
                 )
               ],
             ),

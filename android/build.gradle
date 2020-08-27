@@ -37,4 +37,5 @@ android {
 
 dependencies {
     implementation(name: 'wallet', ext: 'aar')
+    implementation files('libs/wallet-sources.jar')
 }
