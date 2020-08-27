@@ -2,6 +2,7 @@ package com.dabank.flutter_wallet_core;
 
 import androidx.annotation.NonNull;
 
+import java.util.Arrays;
 import java.util.HashMap;
 
 import io.flutter.embedding.engine.plugins.FlutterPlugin;
@@ -104,7 +105,9 @@ public class FlutterWalletCorePlugin implements FlutterPlugin, MethodCallHandler
         return;
       }
       result.success(signTx);
-    } else {
+    } else if (Arrays.asList(FlutterWalletBBC.allFunc).contains(call.method))  {
+       FlutterWalletBBC.callFunc(call,result);
+    }else{
       result.notImplemented();
     }
   }
