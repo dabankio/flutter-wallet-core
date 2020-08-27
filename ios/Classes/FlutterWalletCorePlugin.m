@@ -27,6 +27,7 @@
     NSString* path = call.arguments[@"path"];
     NSString* password = call.arguments[@"password"];
     NSString* symbolString = call.arguments[@"symbols"];
+    NSNumber* beta = call.arguments[@"beta"];
 
     WalletValidateMnemonic(mnemonic, &error);
 
@@ -35,7 +36,7 @@
       return;
     }
 
-    WalletWallet* wallet = [FlutterWalletCorePlugin getWalletInstance:mnemonic path:path password:password error:&error];
+    WalletWallet* wallet = [FlutterWalletCorePlugin getWalletInstance:mnemonic path:path password:password beta:beta error:&error];
 
     if (error) {
       result([FlutterError errorWithCode:@"importMnemonicError" message:error.localizedDescription details:nil]);
@@ -69,6 +70,7 @@
     NSString* password = call.arguments[@"password"];
     NSString* symbol = call.arguments[@"symbol"];
     NSString* rawTx = call.arguments[@"rawTx"];
+    NSNumber* beta = call.arguments[@"beta"];
 
     WalletValidateMnemonic(mnemonic, &error);
 
@@ -77,7 +79,7 @@
       return;
     }
 
-    NSString* signedTx = [FlutterWalletCorePlugin signTx:mnemonic path:path password:password symbol:symbol rawTx:rawTx error:&error];
+    NSString* signedTx = [FlutterWalletCorePlugin signTx:mnemonic path:path password:password symbol:symbol rawTx:rawTx beta:beta error:&error];
 
     if (error) {
       result([FlutterError errorWithCode:@"signError" message:error.localizedDescription details:nil]);
@@ -127,19 +129,19 @@
   return mnemonic;
 }
 
-+ (WalletWallet*) getWalletInstance:(NSString*)mnemonic path:(NSString*)path password:(NSString*)password error:(NSError * _Nullable __autoreleasing * _Nullable)error {
++ (WalletWallet*) getWalletInstance:(NSString*)mnemonic path:(NSString*)path password:(NSString*)password beta:(BOOL) beta error:(NSError * _Nullable __autoreleasing * _Nullable)error {
     WalletWalletOptions* options = [WalletWalletOptions new];
     id<WalletWalletOption> pathOption = WalletWithPathFormat(path);
     id<WalletWalletOption> passwordOption = WalletWithPassword(password);
     [options add:pathOption];
     [options add:passwordOption];
 
-    WalletWallet* wallet = WalletBuildWalletFromMnemonic(mnemonic, false, options, error);
+    WalletWallet* wallet = WalletBuildWalletFromMnemonic(mnemonic, beta, options, error);
     return wallet;
 }
 
-+ (NSString*) signTx:(NSString*)mnemonic path:(NSString*)path password:(NSString*)password symbol:(NSString*)symbol rawTx:(NSString*)rawTx error:(NSError * _Nullable __autoreleasing * _Nullable)error {
-    WalletWallet* wallet = [FlutterWalletCorePlugin getWalletInstance:mnemonic path:path password:password error:error];
++ (NSString*) signTx:(NSString*)mnemonic path:(NSString*)path password:(NSString*)password symbol:(NSString*)symbol rawTx:(NSString*)rawTx beta:(BOOL) beta error:(NSError * _Nullable __autoreleasing * _Nullable)error {
+    WalletWallet* wallet = [FlutterWalletCorePlugin getWalletInstance:mnemonic path:path password:password beta:beta error:error];
     return [wallet sign:symbol msg:rawTx error:error];
 }
 

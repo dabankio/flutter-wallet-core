@@ -55,6 +55,7 @@ public class FlutterWalletCorePlugin implements FlutterPlugin, MethodCallHandler
       String path = call.argument("path");
       String password = call.argument("password");
       String symbolString = call.argument("symbols");
+      boolean beta = call.argument("beta");
       try {
         Wallet.validateMnemonic(mnemonic);
       } catch (Exception e) {
@@ -87,6 +88,7 @@ public class FlutterWalletCorePlugin implements FlutterPlugin, MethodCallHandler
       String path = call.argument("path");
       String password = call.argument("password");
       String symbol = call.argument("symbol");
+      boolean beta = call.argument("beta");
       try {
         Wallet.validateMnemonic(mnemonic);
       } catch (Exception e) {
@@ -96,7 +98,7 @@ public class FlutterWalletCorePlugin implements FlutterPlugin, MethodCallHandler
       Wallet_ wallet;
       String signTx = "";
       try {
-        signTx = this.signTx(mnemonic, path, password, symbol, rawTx);
+        signTx = this.signTx(mnemonic, path, password, symbol, rawTx, beta);
       } catch (Exception e) {
         result.error("PROCESS_ERROR", "Unknown error when signing", null);
         return;
@@ -119,21 +121,21 @@ public class FlutterWalletCorePlugin implements FlutterPlugin, MethodCallHandler
   /**
     * @params password: salt
     */
-  private Wallet_ getWalletInstance(String mnemonic, String path, String password) {
+  private Wallet_ getWalletInstance(String mnemonic, String path, String password, boolean beta) {
     WalletOptions options = new WalletOptions();
     options.add(Wallet.withPathFormat(path));
     options.add(Wallet.withPassword(password));
     Wallet_ wallet = null;
     try {
-      wallet = Wallet.buildWalletFromMnemonic(mnemonic, false, options);
+      wallet = Wallet.buildWalletFromMnemonic(mnemonic, beta, options);
     } catch (Exception e) {
       e.printStackTrace();
     }
     return wallet;
   }
 
-  private String signTx(String mnemonic, String path, String password, String symbol, String rawTx) {
-    Wallet_ wallet = this.getWalletInstance(mnemonic, path, password);
+  private String signTx(String mnemonic, String path, String password, String symbol, String rawTx, boolean beta) {
+    Wallet_ wallet = this.getWalletInstance(mnemonic, path, password, beta);
     try {
       return wallet.sign(symbol, rawTx);
     } catch (Exception e) {

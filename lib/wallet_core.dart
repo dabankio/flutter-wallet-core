@@ -22,6 +22,7 @@ class WalletCore {
     String path,
     String password,
     List<String> symbols,
+    bool beta,
   ) async {
     final keyInfo = Map<String, dynamic>.from(
       await _channel.invokeMethod(
@@ -30,7 +31,8 @@ class WalletCore {
           "mnemonic": mnemonic,
           "path": path,
           "password": password,
-          "symbols": symbols.join(",")
+          "symbols": symbols.join(","),
+          "beta": beta,
         },
       ),
     );
@@ -52,6 +54,7 @@ class WalletCore {
     String password,
     String symbol,
     String rawTx,
+    bool beta,
   ) async {
     final String signedTx = await _channel.invokeMethod<String>(
       "signTx",
@@ -61,6 +64,7 @@ class WalletCore {
         "password": password,
         "symbol": symbol,
         "rawTx": rawTx,
+        "beta": beta,
       },
     );
     return signedTx;
