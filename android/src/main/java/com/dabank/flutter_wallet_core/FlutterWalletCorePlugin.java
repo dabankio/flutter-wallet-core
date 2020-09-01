@@ -57,6 +57,7 @@ public class FlutterWalletCorePlugin implements FlutterPlugin, MethodCallHandler
       String password = call.argument("password");
       String symbolString = call.argument("symbols");
       boolean beta = call.argument("beta");
+      boolean shareAccountWithParentChain = call.argument("shareAccountWithParentChain");
       try {
         Wallet.validateMnemonic(mnemonic);
       } catch (Exception e) {
@@ -65,7 +66,7 @@ public class FlutterWalletCorePlugin implements FlutterPlugin, MethodCallHandler
       }
       Wallet_ wallet;
       try {
-        wallet = this.getWalletInstance(mnemonic, path, password, beta);
+        wallet = this.getWalletInstance(mnemonic, path, password, beta, shareAccountWithParentChain);
       } catch (Exception e) {
         result.error("PROCESS_ERROR", "Unknown error when importing mnemonic", null);
         return;
@@ -90,6 +91,7 @@ public class FlutterWalletCorePlugin implements FlutterPlugin, MethodCallHandler
       String password = call.argument("password");
       String symbol = call.argument("symbol");
       boolean beta = call.argument("beta");
+      boolean shareAccountWithParentChain = call.argument("shareAccountWithParentChain");
       try {
         Wallet.validateMnemonic(mnemonic);
       } catch (Exception e) {
@@ -99,7 +101,7 @@ public class FlutterWalletCorePlugin implements FlutterPlugin, MethodCallHandler
       Wallet_ wallet;
       String signTx = "";
       try {
-        signTx = this.signTx(mnemonic, path, password, symbol, rawTx, beta);
+        signTx = this.signTx(mnemonic, path, password, symbol, rawTx, beta, shareAccountWithParentChain);
       } catch (Exception e) {
         result.error("PROCESS_ERROR", "Unknown error when signing", null);
         return;
@@ -124,10 +126,15 @@ public class FlutterWalletCorePlugin implements FlutterPlugin, MethodCallHandler
   /**
     * @params password: salt
     */
-  private Wallet_ getWalletInstance(String mnemonic, String path, String password, boolean beta) {
+  private Wallet_ getWalletInstance(
+          String mnemonic, String path,
+          String password, boolean beta,
+          boolean shareAccountWithParentChain
+  ) {
     WalletOptions options = new WalletOptions();
     options.add(Wallet.withPathFormat(path));
     options.add(Wallet.withPassword(password));
+    options.add(Wallet.withShareAccountWithParentChain(shareAccountWithParentChain));
     Wallet_ wallet = null;
     try {
       wallet = Wallet.buildWalletFromMnemonic(mnemonic, beta, options);
@@ -137,8 +144,8 @@ public class FlutterWalletCorePlugin implements FlutterPlugin, MethodCallHandler
     return wallet;
   }
 
-  private String signTx(String mnemonic, String path, String password, String symbol, String rawTx, boolean beta) {
-    Wallet_ wallet = this.getWalletInstance(mnemonic, path, password, beta);
+  private String signTx(String mnemonic, String path, String password, String symbol, String rawTx, boolean beta, boolean shareAccountWithParentChain) {
+    Wallet_ wallet = this.getWalletInstance(mnemonic, path, password, beta, shareAccountWithParentChain);
     try {
       return wallet.sign(symbol, rawTx);
     } catch (Exception e) {

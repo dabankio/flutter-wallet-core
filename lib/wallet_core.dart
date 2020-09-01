@@ -16,6 +16,12 @@ class Keys {
   Keys({this.publicKey, this.address});
 }
 
+class WalletCoreOptions {
+  final bool beta;
+  final bool shareAccountWithParentChain;
+  const WalletCoreOptions({this.beta = false, this.shareAccountWithParentChain = false});
+}
+
 class WalletCore {
 
   static const _channel = MethodChannel('flutter_wallet_core');
@@ -30,7 +36,7 @@ class WalletCore {
     String path,
     String password,
     List<String> symbols,
-    bool beta,
+    [WalletCoreOptions options = const WalletCoreOptions()]
   ) async {
     final keyInfo = Map<String, dynamic>.from(
       await _channel.invokeMethod(
@@ -40,7 +46,8 @@ class WalletCore {
           "path": path,
           "password": password,
           "symbols": symbols.join(","),
-          "beta": beta,
+          "beta": options.beta,
+          "shareAccountWithParentChain": options.shareAccountWithParentChain,
         },
       ),
     );
@@ -62,7 +69,7 @@ class WalletCore {
     String password,
     String symbol,
     String rawTx,
-    bool beta,
+    [WalletCoreOptions options = const WalletCoreOptions()]
   ) async {
     final String signedTx = await _channel.invokeMethod<String>(
       "signTx",
@@ -72,7 +79,8 @@ class WalletCore {
         "password": password,
         "symbol": symbol,
         "rawTx": rawTx,
-        "beta": beta,
+        "beta": options.beta,
+        "shareAccountWithParentChain": options.shareAccountWithParentChain,
       },
     );
     return signedTx;

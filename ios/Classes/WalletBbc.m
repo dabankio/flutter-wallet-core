@@ -1,5 +1,5 @@
 #import "WalletBbc.h"
-#import <bip39/Bbc.objc.h>
+#import <Bip39/Bbc.objc.h>
 #import "StringUtils.h"
 
 @interface WalletBbc ()
