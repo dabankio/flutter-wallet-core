@@ -13,7 +13,6 @@ import io.flutter.plugin.common.MethodChannel.Result;
 import io.flutter.plugin.common.PluginRegistry.Registrar;
 
 import wallet.Wallet;
-import wallet.WalletOption;
 import wallet.WalletOptions;
 import wallet.Wallet_;
 
