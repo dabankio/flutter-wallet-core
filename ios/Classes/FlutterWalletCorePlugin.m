@@ -135,10 +135,10 @@
     WalletWalletOptions* options = [WalletWalletOptions new];
     id<WalletWalletOption> pathOption = WalletWithPathFormat(path);
     id<WalletWalletOption> passwordOption = WalletWithPassword(password);
-    id<WalletWalletOption> shareAccountWithParentChain = WalletWithShareAccountWithParentChain(shareAccountWithParentChain);
+    id<WalletWalletOption> shareAccountWithParentChainOption = WalletWithShareAccountWithParentChain(shareAccountWithParentChain);
     [options add:pathOption];
     [options add:passwordOption];
-    [options add:shareAccountWithParentChain];
+    [options add:shareAccountWithParentChainOption];
 
     WalletWallet* wallet = WalletBuildWalletFromMnemonic(mnemonic, beta, options, error);
     return wallet;
