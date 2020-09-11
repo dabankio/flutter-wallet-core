@@ -35,6 +35,7 @@
 This is calculated by assuming a standard output will be 34 bytes
  */
 FOUNDATION_EXPORT const int64_t OmniMinNondustOutput;
+FOUNDATION_EXPORT NSString* _Nonnull const OmniOptionShareAccountWithParentChain;
 
 /**
  * CreateSimpleSendTransaction 创建基于btc的omni交易,该方法构建比特币交易输出，包括：
