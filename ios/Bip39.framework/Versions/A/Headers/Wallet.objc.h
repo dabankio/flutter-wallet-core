@@ -55,6 +55,10 @@ return: json 数据
  * DerivePublicKey 获取对应币种代号的 公钥
  */
 - (NSString* _Nonnull)derivePublicKey:(NSString* _Nullable)symbol error:(NSError* _Nullable* _Nullable)error;
+/**
+ * HasFlag 是否存在flag
+ */
+- (BOOL)hasFlag:(NSString* _Nullable)flag;
 // skipped method Wallet.Metadata with unsupported parameter or return types
 
 /**
@@ -88,6 +92,15 @@ return: json 数据
 - (nonnull instancetype)init;
 - (void)add:(id<WalletWalletOption> _Nullable)opt;
 @end
+
+/**
+ * FlagBBCUseStandardBip44ID BBC使用标准bip44 id (默认不是标准bip44 id)
+ */
+FOUNDATION_EXPORT NSString* _Nonnull const WalletFlagBBCUseStandardBip44ID;
+/**
+ * FlagMKFUseBBCBip44ID MKF使用BBC的bip44 id (即MKF和BBC共用地址)
+ */
+FOUNDATION_EXPORT NSString* _Nonnull const WalletFlagMKFUseBBCBip44ID;
 
 /**
  * BuildWallet create a Wallet instance with fixed args (here is mnemonic and testNet) and other options
@@ -140,6 +153,11 @@ FOUNDATION_EXPORT WalletWalletBuilder* _Nullable WalletNewWalletBuilder(void);
  * ValidateMnemonic 验证助记词的正确性
  */
 FOUNDATION_EXPORT BOOL WalletValidateMnemonic(NSString* _Nullable mnemonic, NSError* _Nullable* _Nullable error);
+
+/**
+ * WithFlag 该选项添加特殊配置flag, flag参考 FlagXXX 常量
+ */
+FOUNDATION_EXPORT id<WalletWalletOption> _Nullable WalletWithFlag(NSString* _Nullable flag);
 
 FOUNDATION_EXPORT id<WalletWalletOption> _Nullable WalletWithPassword(NSString* _Nullable password);
 

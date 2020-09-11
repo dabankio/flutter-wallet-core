@@ -41,7 +41,7 @@
  * NewTxBuilder new 一个transaction builder
  */
 - (nullable instancetype)init;
-// skipped field TxBuilder.TXBuilder with unsupported type: *github.com/lomocoin/gobbc.TXBuilder
+// skipped field TxBuilder.TXBuilder with unsupported type: *github.com/dabankio/gobbc.TXBuilder
 
 /**
  * AddInput 参考listunspent,确保输入金额满足amount
@@ -51,6 +51,10 @@
  * Build 构造交易,返回hex编码的tx
  */
 - (NSString* _Nonnull)build:(NSError* _Nullable* _Nullable)error;
+/**
+ * ExcludeAnchor MKF需要调用该函数(使得序列化时不会处理anchor字段)
+ */
+- (BbcTxBuilder* _Nullable)excludeAnchor;
 /**
  * SetAddress 转账地址,目前只支持公钥地址
  */
@@ -93,13 +97,26 @@
 - (BbcTxBuilder* _Nullable)setVersion:(long)v;
 @end
 
+FOUNDATION_EXPORT NSString* _Nonnull const BbcSymbolBBC;
+FOUNDATION_EXPORT NSString* _Nonnull const BbcSymbolMKF;
+
+@interface Bbc : NSObject
+// skipped variable FullnameMap with unsupported type: map[string]string
+
+@end
+
 /**
  * Address2pubk 将地址转换为公钥
  */
 FOUNDATION_EXPORT NSString* _Nonnull BbcAddress2pubk(NSString* _Nullable address, NSError* _Nullable* _Nullable error);
 
 /**
- * DecodeTX 解析原始交易（使用JSON RPC createtransaction 创建的交易）,
+ * DecodeSymbolTX 解析原始交易（使用JSON RPC createtransaction 创建的交易）,symbol: BBC | MKF
+ */
+FOUNDATION_EXPORT NSString* _Nonnull BbcDecodeSymbolTX(NSString* _Nullable symbol, NSString* _Nullable rawTX, NSError* _Nullable* _Nullable error);
+
+/**
+ * DecodeTX 该函数已废弃，请使用 DecodeSymbolTX
  */
 FOUNDATION_EXPORT NSString* _Nonnull BbcDecodeTX(NSString* _Nullable rawTX, NSError* _Nullable* _Nullable error);
 
@@ -112,6 +129,11 @@ FOUNDATION_EXPORT BbcKeyInfo* _Nullable BbcDeriveKey(NSData* _Nullable seed, lon
  * DeriveKeySimple 推导路径 m/44'/%d'
  */
 FOUNDATION_EXPORT BbcKeyInfo* _Nullable BbcDeriveKeySimple(NSData* _Nullable seed, NSError* _Nullable* _Nullable error);
+
+/**
+ * DeriveSymbolKeySimple 推导路径 m/44'/%d'
+ */
+FOUNDATION_EXPORT BbcKeyInfo* _Nullable BbcDeriveSymbolKeySimple(NSString* _Nullable symbol, NSData* _Nullable seed, NSError* _Nullable* _Nullable error);
 
 /**
  * NewBip44Deriver 根据种子获取bip44推导
@@ -130,6 +152,19 @@ FOUNDATION_EXPORT id<Bip44Deriver> _Nullable BbcNewBip44Deriver(NSData* _Nullabl
 FOUNDATION_EXPORT id<Bip44Deriver> _Nullable BbcNewSimpleBip44Deriver(NSData* _Nullable seed, NSError* _Nullable* _Nullable error);
 
 /**
+ * NewSymbolBip44Deriver 指定币种推导
+ */
+FOUNDATION_EXPORT id<Bip44Deriver> _Nullable BbcNewSymbolBip44Deriver(NSString* _Nullable symbol, NSData* _Nullable seed, long accountIndex, long changeType, long index, NSError* _Nullable* _Nullable error);
+
+// skipped function NewSymbolCoin with unsupported parameter or return types
+
+
+/**
+ * NewSymbolSimpleBip44Deriver 根据种子获取bip44推导,仅推导1个
+ */
+FOUNDATION_EXPORT id<Bip44Deriver> _Nullable BbcNewSymbolSimpleBip44Deriver(NSString* _Nullable symbol, NSData* _Nullable seed, NSError* _Nullable* _Nullable error);
+
+/**
  * NewTxBuilder new 一个transaction builder
  */
 FOUNDATION_EXPORT BbcTxBuilder* _Nullable BbcNewTxBuilder(void);
@@ -141,9 +176,14 @@ FOUNDATION_EXPORT BbcKeyInfo* _Nullable BbcParsePrivateKey(NSString* _Nullable p
 
 /**
  * SignWithPrivateKey 使用私钥对原始交易进行签名,
-关于templateData的使用参考 https://github.com/lomocoin/gobbc/blob/d51d596fa310a5778e3d11eb59bc66d1a6a5e3d6/transaction.go#L197 （SignWithPrivateKey部分）
+关于templateData的使用参考 https://github.com/dabankio/gobbc/blob/d51d596fa310a5778e3d11eb59bc66d1a6a5e3d6/transaction.go#L197 （SignWithPrivateKey部分）
 参考测试用例 qa/bbc/example_bbc_test.go
  */
 FOUNDATION_EXPORT NSString* _Nonnull BbcSignWithPrivateKey(NSString* _Nullable rawTX, NSString* _Nullable templateData, NSString* _Nullable privateKey, NSError* _Nullable* _Nullable error);
+
+/**
+ * SymbolSignWithPrivateKey 指定币种使用私钥对交易签名
+ */
+FOUNDATION_EXPORT NSString* _Nonnull BbcSymbolSignWithPrivateKey(NSString* _Nullable symbol, NSString* _Nullable rawTX, NSString* _Nullable templateData, NSString* _Nullable privateKey, NSError* _Nullable* _Nullable error);
 
 #endif
