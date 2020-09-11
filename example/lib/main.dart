@@ -33,7 +33,7 @@ class _MyAppState extends State<MyApp> {
 
   void importMnemonic(BuildContext context) async {
     final wallets =
-        await WalletCore.importMnemonic(mnemonic, path, password, symbols);
+        await WalletCore.importMnemonic(false, mnemonic, path, password, symbols);
 
     showBottomSheet(
       context: context,
