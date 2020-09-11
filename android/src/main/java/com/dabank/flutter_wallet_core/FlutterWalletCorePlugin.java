@@ -56,6 +56,7 @@ public class FlutterWalletCorePlugin implements FlutterPlugin, MethodCallHandler
       String path = call.argument("path");
       String password = call.argument("password");
       String symbolString = call.argument("symbols");
+      boolean useBip44 = call.argument("useBip44");
       boolean beta = call.argument("beta");
       boolean shareAccountWithParentChain = call.argument("shareAccountWithParentChain");
       try {
@@ -66,7 +67,7 @@ public class FlutterWalletCorePlugin implements FlutterPlugin, MethodCallHandler
       }
       Wallet_ wallet;
       try {
-        wallet = this.getWalletInstance(mnemonic, path, password, beta, shareAccountWithParentChain);
+        wallet = this.getWalletInstance(useBip44, mnemonic, path, password, beta, shareAccountWithParentChain);
       } catch (Exception e) {
         result.error("PROCESS_ERROR", "Unknown error when importing mnemonic", null);
         return;
@@ -91,6 +92,7 @@ public class FlutterWalletCorePlugin implements FlutterPlugin, MethodCallHandler
       String password = call.argument("password");
       String symbol = call.argument("symbol");
       boolean beta = call.argument("beta");
+      boolean useBip44 = call.argument("useBip44");
       boolean shareAccountWithParentChain = call.argument("shareAccountWithParentChain");
       try {
         Wallet.validateMnemonic(mnemonic);
@@ -101,7 +103,7 @@ public class FlutterWalletCorePlugin implements FlutterPlugin, MethodCallHandler
       Wallet_ wallet;
       String signTx = "";
       try {
-        signTx = this.signTx(mnemonic, path, password, symbol, rawTx, beta, shareAccountWithParentChain);
+        signTx = this.signTx(useBip44, mnemonic, path, password, symbol, rawTx, beta, shareAccountWithParentChain);
       } catch (Exception e) {
         result.error("PROCESS_ERROR", "Unknown error when signing", null);
         return;
@@ -126,15 +128,22 @@ public class FlutterWalletCorePlugin implements FlutterPlugin, MethodCallHandler
   /**
     * @params password: salt
     */
-  private Wallet_ getWalletInstance(
-          String mnemonic, String path,
-          String password, boolean beta,
-          boolean shareAccountWithParentChain
+  private Wallet_ getWalletInstance(boolean useBip44, String mnemonic,
+                                    String path, String password, boolean beta,
+                                    boolean shareAccountWithParentChain
   ) {
     WalletOptions options = new WalletOptions();
     options.add(Wallet.withPathFormat(path));
     options.add(Wallet.withPassword(password));
     options.add(Wallet.withShareAccountWithParentChain(shareAccountWithParentChain));
+
+    if(useBip44){
+      // 以下为兼容 imtoken 的模式
+      options.add(Wallet.withFlag(Wallet.FlagBBCUseStandardBip44ID));
+      options.add(Wallet.withFlag(Wallet.FlagMKFUseBBCBip44ID));
+      // 以上为兼容 imtoken 的模式
+    }
+
     Wallet_ wallet = null;
     try {
       wallet = Wallet.buildWalletFromMnemonic(mnemonic, beta, options);
@@ -144,8 +153,8 @@ public class FlutterWalletCorePlugin implements FlutterPlugin, MethodCallHandler
     return wallet;
   }
 
-  private String signTx(String mnemonic, String path, String password, String symbol, String rawTx, boolean beta, boolean shareAccountWithParentChain) {
-    Wallet_ wallet = this.getWalletInstance(mnemonic, path, password, beta, shareAccountWithParentChain);
+  private String signTx(boolean useBip44, String mnemonic, String path, String password, String symbol, String rawTx, boolean beta, boolean shareAccountWithParentChain) {
+    Wallet_ wallet = this.getWalletInstance(useBip44, mnemonic, path, password, beta, shareAccountWithParentChain);
     try {
       return wallet.sign(symbol, rawTx);
     } catch (Exception e) {

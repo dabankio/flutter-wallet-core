@@ -18,6 +18,7 @@ void main() {
       final String mnemonic = await WalletCore.generateMnemonic();
       final String path = "m/44'/0'/0'/0/0";
       Map<String, Keys> keyInfo = await WalletCore.importMnemonic(
+        false,
           mnemonic,
           path,
           password,
@@ -37,8 +38,8 @@ void main() {
     test("with dabank legecy path", () async {
       final String mnemonic = await WalletCore.generateMnemonic();
       final String path = "m/44'/%d'";
-      Map<String, Keys> keyInfo = await WalletCore.importMnemonic(
-          mnemonic, path, password, symbols);
+      Map<String, Keys> keyInfo =
+          await WalletCore.importMnemonic(false, mnemonic, path, password, symbols);
 
       expect(keyInfo.keys.toList(), symbols);
 
@@ -53,8 +54,8 @@ void main() {
     test("with custom path", () async {
       final String mnemonic = await WalletCore.generateMnemonic();
       final String path = "m/44'/0'/1'/0/0";
-      Map<String, Keys> keyInfo = await WalletCore.importMnemonic(
-          mnemonic, path, password, symbols);
+      Map<String, Keys> keyInfo =
+          await WalletCore.importMnemonic(false, mnemonic, path, password, symbols);
 
       expect(keyInfo.keys.toList(), symbols);
 
@@ -76,7 +77,7 @@ void main() {
       final String mnemonic = await WalletCore.generateMnemonic();
       final String rawTx = "test_tx";
       final String signTx = await WalletCore.signTx(
-          mnemonic, path, password, symbol, rawTx);
+          false, mnemonic, path, password, symbol, rawTx);
       expect(signTx, isNotNull);
     });
 
@@ -84,8 +85,8 @@ void main() {
       final String symbol = "BTC";
       final String mnemonic = await WalletCore.generateMnemonic();
       final String rawTx = "test_tx";
-      final String signTx = await WalletCore.signTx(
-          mnemonic, path, password, symbol, rawTx);
+      final String signTx =
+          await WalletCore.signTx(false, mnemonic, path, password, symbol, rawTx);
       expect(signTx, isNotNull);
     });
 
@@ -94,7 +95,7 @@ void main() {
       final String mnemonic = await WalletCore.generateMnemonic();
       final String rawTx = "test_tx";
       final String signTx = await WalletCore.signTx(
-          mnemonic, path, password, symbol, rawTx);
+          false, mnemonic, path, password, symbol, rawTx);
       expect(signTx, isNotNull);
     });
 
@@ -102,8 +103,8 @@ void main() {
       final String symbol = "BTC";
       final String mnemonic = await WalletCore.generateMnemonic();
       final String rawTx = "test_tx";
-      final String signTx = await WalletCore.signTx(
-          mnemonic, path, password, symbol, rawTx);
+      final String signTx =
+          await WalletCore.signTx(false, mnemonic, path, password, symbol, rawTx);
       expect(signTx, isNotNull);
     });
   });
