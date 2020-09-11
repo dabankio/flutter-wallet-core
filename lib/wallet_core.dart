@@ -32,6 +32,7 @@ class WalletCore {
   }
 
   static Future<Map<String, Keys>> importMnemonic(
+    bool useBip44,
     String mnemonic,
     String path,
     String password,
@@ -42,6 +43,7 @@ class WalletCore {
       await _channel.invokeMethod(
         'importMnemonic',
         {
+          "useBip44": useBip44,
           "mnemonic": mnemonic,
           "path": path,
           "password": password,
@@ -64,6 +66,7 @@ class WalletCore {
   }
 
   static Future<String> signTx(
+    bool useBip44,
     String mnemonic,
     String path,
     String password,
@@ -74,6 +77,7 @@ class WalletCore {
     final String signedTx = await _channel.invokeMethod<String>(
       "signTx",
       {
+        "useBip44": useBip44,
         "mnemonic": mnemonic,
         "path": path,
         "password": password,

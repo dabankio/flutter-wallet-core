@@ -29,6 +29,8 @@
     NSString* symbolString = call.arguments[@"symbols"];
     NSNumber* beta = call.arguments[@"beta"];
     NSNumber* shareAccountWithParentChain = call.arguments[@"shareAccountWithParentChain"];
+   NSNumber* useBip44 = call.arguments[@"useBip44"];
+
 
     WalletValidateMnemonic(mnemonic, &error);
 
@@ -37,7 +39,7 @@
       return;
     }
 
-      WalletWallet* wallet = [FlutterWalletCorePlugin getWalletInstance:mnemonic path:path password:password beta:beta shareAccountWithParentChain:shareAccountWithParentChain error:&error];
+      WalletWallet* wallet = [FlutterWalletCorePlugin getWalletInstance: useBip44 mnemonic:mnemonic path:path password:password beta:beta shareAccountWithParentChain:shareAccountWithParentChain error:&error];
 
     if (error) {
       result([FlutterError errorWithCode:@"importMnemonicError" message:error.localizedDescription details:nil]);
@@ -73,6 +75,7 @@
     NSString* rawTx = call.arguments[@"rawTx"];
     NSNumber* beta = call.arguments[@"beta"];
     NSNumber* shareAccountWithParentChain = call.arguments[@"shareAccountWithParentChain"];
+    NSNumber* useBip44 = call.arguments[@"useBip44"];
 
     WalletValidateMnemonic(mnemonic, &error);
 
@@ -81,7 +84,7 @@
       return;
     }
 
-      NSString* signedTx = [FlutterWalletCorePlugin signTx:mnemonic path:path password:password symbol:symbol rawTx:rawTx beta:beta shareAccountWithParentChain:shareAccountWithParentChain error:&error];
+      NSString* signedTx = [FlutterWalletCorePlugin signTx: useBip44 mnemonic:mnemonic path:path password:password symbol:symbol rawTx:rawTx beta:beta shareAccountWithParentChain:shareAccountWithParentChain error:&error];
 
     if (error) {
       result([FlutterError errorWithCode:@"signError" message:error.localizedDescription details:nil]);
@@ -131,7 +134,7 @@
   return mnemonic;
 }
 
-+ (WalletWallet*) getWalletInstance:(NSString*)mnemonic path:(NSString*)path password:(NSString*)password beta:(BOOL) beta shareAccountWithParentChain:(BOOL) shareAccountWithParentChain  error:(NSError * _Nullable __autoreleasing * _Nullable)error {
++ (WalletWallet*) getWalletInstance: (BOOL)useBip44 mnemonic:(NSString*)mnemonic path:(NSString*)path password:(NSString*)password beta:(BOOL) beta shareAccountWithParentChain:(BOOL) shareAccountWithParentChain  error:(NSError * _Nullable __autoreleasing * _Nullable)error {
     WalletWalletOptions* options = [WalletWalletOptions new];
     id<WalletWalletOption> pathOption = WalletWithPathFormat(path);
     id<WalletWalletOption> passwordOption = WalletWithPassword(password);
@@ -139,13 +142,18 @@
     [options add:pathOption];
     [options add:passwordOption];
     [options add:shareAccountWithParentChainOption];
+    
+    if (useBip44) {
+        [options add:WalletWithFlag(WalletFlagBBCUseStandardBip44ID)];
+        [options add:WalletWithFlag(WalletFlagMKFUseBBCBip44ID)];
+    }
 
     WalletWallet* wallet = WalletBuildWalletFromMnemonic(mnemonic, beta, options, error);
     return wallet;
 }
 
-+ (NSString*) signTx:(NSString*)mnemonic path:(NSString*)path password:(NSString*)password symbol:(NSString*)symbol rawTx:(NSString*)rawTx beta:(BOOL) beta shareAccountWithParentChain:(BOOL) shareAccountWithParentChain error:(NSError * _Nullable __autoreleasing * _Nullable)error {
-    WalletWallet* wallet = [FlutterWalletCorePlugin getWalletInstance:mnemonic path:path password:password beta:beta shareAccountWithParentChain:shareAccountWithParentChain error:error];
++ (NSString*) signTx:(BOOL)useBip44 mnemonic:(NSString*)mnemonic path:(NSString*)path password:(NSString*)password symbol:(NSString*)symbol rawTx:(NSString*)rawTx beta:(BOOL) beta shareAccountWithParentChain:(BOOL) shareAccountWithParentChain error:(NSError * _Nullable __autoreleasing * _Nullable)error {
+    WalletWallet* wallet = [FlutterWalletCorePlugin getWalletInstance:useBip44 mnemonic:mnemonic path:path password:password beta:beta shareAccountWithParentChain:shareAccountWithParentChain error:error];
     return [wallet sign:symbol msg:rawTx error:error];
 }
 

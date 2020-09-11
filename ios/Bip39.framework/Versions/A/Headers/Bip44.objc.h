@@ -11,6 +11,7 @@
 #include "Universe.objc.h"
 
 
+@class Bip44AdditionalDeriveParam;
 @protocol Bip44Deriver;
 @class Bip44Deriver;
 
@@ -18,6 +19,20 @@
 - (NSString* _Nonnull)deriveAddress:(NSError* _Nullable* _Nullable)error;
 - (NSString* _Nonnull)derivePrivateKey:(NSError* _Nullable* _Nullable)error;
 - (NSString* _Nonnull)derivePublicKey:(NSError* _Nullable* _Nullable)error;
+@end
+
+/**
+ * AdditionalDeriveParam 额外的推导参数
+ */
+@interface Bip44AdditionalDeriveParam : NSObject <goSeqRefInterface> {
+}
+@property(strong, readonly) _Nonnull id _ref;
+
+- (nonnull instancetype)initWithRef:(_Nonnull id)ref;
+- (nonnull instancetype)init;
+@property (nonatomic) long accountIndex;
+@property (nonatomic) long changeType;
+@property (nonatomic) long index;
 @end
 
 /**
@@ -39,7 +54,7 @@ FOUNDATION_EXPORT NSString* _Nonnull const Bip44PathFormat;
 // skipped function GetCoinType with unsupported parameter or return types
 
 
-// skipped function GetFullCoinDerivationPath with unsupported parameter or return types
+// skipped function GetDerivePath with unsupported parameter or return types
 
 
 @class Bip44Deriver;
