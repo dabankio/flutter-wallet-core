@@ -27,6 +27,9 @@
 - (BOOL)visit:(WalletWallet* _Nullable)p0 error:(NSError* _Nullable* _Nullable)error;
 @end
 
+/**
+ * Wallet all in one signer
+ */
 @interface WalletWallet : NSObject <goSeqRefInterface> {
 }
 @property(strong, readonly) _Nonnull id _ref;
@@ -37,6 +40,10 @@
  * ShareAccountWithParentChain break the HD rule, use the metadata of the parent chain to generate keys and addresses.
  */
 @property (nonatomic) BOOL shareAccountWithParentChain;
+/**
+ * Bip39Seed get bip39 seed,调用该函数后不要求该mnemonic和password
+ */
+- (NSData* _Nullable)bip39Seed:(NSError* _Nullable* _Nullable)error;
 - (WalletWallet* _Nullable)clone:(WalletWalletOptions* _Nullable)options error:(NSError* _Nullable* _Nullable)error;
 /**
  * DecodeTx 解析交易数据
@@ -134,9 +141,9 @@ FOUNDATION_EXPORT NSString* _Nonnull WalletGetVersion(void);
 FOUNDATION_EXPORT NSString* _Nonnull WalletMnemonicFromEntropy(NSString* _Nullable entropy, NSError* _Nullable* _Nullable error);
 
 /**
- * NewMnemonic 通过助记词得到一个 HD 对象
+ * NewHDWalletFromMnemonic 通过助记词得到一个 HD 对象
  */
-FOUNDATION_EXPORT WalletWallet* _Nullable WalletNewHDWalletFromMnemonic(NSString* _Nullable mnemonic, BOOL testNet, NSError* _Nullable* _Nullable error);
+FOUNDATION_EXPORT WalletWallet* _Nullable WalletNewHDWalletFromMnemonic(NSString* _Nullable mnemonic, NSString* _Nullable password, BOOL testNet, NSError* _Nullable* _Nullable error);
 
 /**
  * NewMnemonic 生成助记词

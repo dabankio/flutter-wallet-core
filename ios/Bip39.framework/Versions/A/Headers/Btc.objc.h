@@ -165,7 +165,7 @@ FOUNDATION_EXPORT const int64_t BtcChainRegtest;
 FOUNDATION_EXPORT const int64_t BtcChainTestNet3;
 
 @interface Btc : NSObject
-// skipped variable New with unsupported type: func(seed []byte, chainID int) (c *github.com/dabankio/wallet-core/core/btc/internal.BTC, err error)
+// skipped variable New with unsupported type: func(bip44Path string, seed []byte, chainID int) (c *github.com/dabankio/wallet-core/core/btc/internal.BTC, err error)
 
 @end
 
@@ -200,7 +200,7 @@ FOUNDATION_EXPORT BtcBTCTransaction* _Nullable BtcNewBTCTransaction(BtcBTCUnspen
 /**
  * NewBip44Deriver btc bip44 实现
  */
-FOUNDATION_EXPORT id<Bip44Deriver> _Nullable BtcNewBip44Deriver(NSData* _Nullable seed, long chainID, NSError* _Nullable* _Nullable error);
+FOUNDATION_EXPORT id<Bip44Deriver> _Nullable BtcNewBip44Deriver(NSString* _Nullable bip44Path, NSData* _Nullable seed, long chainID, NSError* _Nullable* _Nullable error);
 
 // skipped function NewCoin with unsupported parameter or return types
 

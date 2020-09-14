@@ -421,7 +421,7 @@ FOUNDATION_EXPORT NSString* _Nonnull const EthERC20InterfaceABI;
 FOUNDATION_EXPORT NSString* _Nonnull const EthSimpleMultiSigABI;
 
 @interface Eth : NSObject
-// skipped variable New with unsupported type: func(seed []byte) (c *github.com/dabankio/wallet-core/core/eth/internalized.eth, err error)
+// skipped variable New with unsupported type: func(bip44Path string, seed []byte) (c *github.com/dabankio/wallet-core/core/eth/internalized.eth, err error)
 
 // skipped variable NewFromMetadata with unsupported type: func(md github.com/dabankio/wallet-core/core.MetadataProvider) (c *github.com/dabankio/wallet-core/core/eth/internalized.eth, err error)
 
@@ -454,7 +454,7 @@ FOUNDATION_EXPORT EthBigInt* _Nullable EthNewBigInt(int64_t x);
 /**
  * NewBip44Deriver eth bip44 实现
  */
-FOUNDATION_EXPORT id<Bip44Deriver> _Nullable EthNewBip44Deriver(NSData* _Nullable seed, NSError* _Nullable* _Nullable error);
+FOUNDATION_EXPORT id<Bip44Deriver> _Nullable EthNewBip44Deriver(NSString* _Nullable bip44Path, NSData* _Nullable seed, NSError* _Nullable* _Nullable error);
 
 /**
  * NewByte32ArrayWrap .
