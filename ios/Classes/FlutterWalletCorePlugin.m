@@ -27,9 +27,9 @@
     NSString* path = call.arguments[@"path"];
     NSString* password = call.arguments[@"password"];
     NSString* symbolString = call.arguments[@"symbols"];
-    NSNumber* beta = call.arguments[@"beta"];
-    NSNumber* shareAccountWithParentChain = call.arguments[@"shareAccountWithParentChain"];
-   NSNumber* useBip44 = call.arguments[@"useBip44"];
+    bool beta = [call.arguments[@"beta"] boolValue];
+    bool shareAccountWithParentChain = [call.arguments[@"shareAccountWithParentChain"] boolValue];
+    bool useBip44 = [call.arguments[@"useBip44"] boolValue];
 
 
     WalletValidateMnemonic(mnemonic, &error);
@@ -73,9 +73,9 @@
     NSString* password = call.arguments[@"password"];
     NSString* symbol = call.arguments[@"symbol"];
     NSString* rawTx = call.arguments[@"rawTx"];
-    NSNumber* beta = call.arguments[@"beta"];
-    NSNumber* shareAccountWithParentChain = call.arguments[@"shareAccountWithParentChain"];
-    NSNumber* useBip44 = call.arguments[@"useBip44"];
+    bool beta = [call.arguments[@"beta"] boolValue];
+    bool shareAccountWithParentChain = [call.arguments[@"shareAccountWithParentChain"] boolValue];
+    bool useBip44 = [call.arguments[@"useBip44"] boolValue];
 
     WalletValidateMnemonic(mnemonic, &error);
 
